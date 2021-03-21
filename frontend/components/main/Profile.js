@@ -104,7 +104,10 @@ function Profile(props) {
           data={userPosts}
           renderItem={({ item }) => (
             <View style={styles.imageContainer}>
-              <Image style={styles.image} source={{ uri: item.downloadURL }} />
+              <Image
+                style={styles.image}
+                source={{ uri: item.downloadURL, cache: "only-if-cached" }}
+              />
             </View>
           )}
         />

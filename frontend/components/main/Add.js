@@ -12,6 +12,7 @@ export default function Add({ navigation }) {
   const [camera, setCamera] = useState(null);
   const [image, setImage] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+  const [saveImageOpacity, setSaveImageOpacity] = useState(0);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,7 +33,7 @@ export default function Add({ navigation }) {
   const takePicture = async () => {
     if (camera) {
       const data = await camera.takePictureAsync({
-        quality: 0.2,
+        quality: 0.1,
       });
       setImage(data.uri);
     }
@@ -99,7 +100,8 @@ export default function Add({ navigation }) {
         />
       </View>
       <TouchableOpacity
-        onPress={() => takePicture() && navigation.navigate("Save", { image })}
+        onPress={() => takePicture()}
+        onPressIn={() => setSaveImageOpacity(1)}
         style={{
           marginLeft: "40%",
           marginBottom: "15%",
@@ -113,22 +115,35 @@ export default function Add({ navigation }) {
           backgroundColor: "#ccc",
         }}
       ></TouchableOpacity>
+      <View
+        style={{
+          position: "absolute",
+          bottom: "13%",
+          right: "3%",
+          alignItems: "center",
+          opacity: saveImageOpacity,
+        }}
+      >
+        <Image
+          source={{ uri: image }}
+          style={{
+            height: 100,
+            width: 100,
+            borderRadius: 8,
+          }}
+        />
+        <MaterialIcons
+          name="send"
+          color="#39CC9E"
+          size={26}
+          style={{ margin: 5 }}
+          onPress={() => navigation.navigate("Save", { image })}
+        />
+      </View>
       {/*<Button
         title="Save"
         onPress={() => navigation.navigate("Save", { image })}
       /> */}
-      {image && (
-        <Image
-          source={{ uri: image }}
-          style={{
-            width: 20,
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-          }}
-        />
-      )}
     </View>
   );
 }

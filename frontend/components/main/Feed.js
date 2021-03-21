@@ -6,11 +6,12 @@ import {
   Image,
   FlatList,
   RefreshControl,
-  Button,
   SafeAreaView,
-  TouchableOpacity,
 } from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { StatusBar } from "expo-status-bar";
+import { Avatar, Button } from "react-native-elements";
 
 import firebase from "firebase";
 require("firebase/firestore");
@@ -83,19 +84,38 @@ function Feed(props) {
           }
           renderItem={({ item }) => (
             <View style={styles.containerImage}>
-              <Text style={styles.displayName}>{item.user.displayName}</Text>
+              <View style={{ margin: 10, flexDirection: "row" }}>
+                <Avatar
+                  rounded
+                  source={{
+                    uri:
+                      "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
+                  }}
+                />
+                <Text style={styles.displayName}>{item.user.displayName}</Text>
+              </View>
               <Text style={styles.caption}>{item.caption}</Text>
               <Image style={styles.image} source={{ uri: item.downloadURL }} />
-              <View style={{ flex: 1, flexDirection: "row" }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  marginLeft: 10,
+                  alignItems: "center",
+                }}
+              >
                 <Text>{item.likesCount}</Text>
                 {item.currentUserLike ? (
                   <Button
-                    title="Dislike"
+                    icon={<AntDesign name="heart" size={20} color="#ff5a52" />}
+                    buttonStyle={{ backgroundColor: "transparent" }}
                     onPress={() => onDislikePress(item.user.uid, item.id)}
                   />
                 ) : (
                   <Button
-                    title="Like"
+                    icon={<AntDesign name="hearto" size={20} color="#000" />}
+                    buttonStyle={{ backgroundColor: "transparent" }}
                     onPress={() => onLikePress(item.user.uid, item.id)}
                   />
                 )}
@@ -107,7 +127,11 @@ function Feed(props) {
                     })
                   }
                 >
-                  View Comments...
+                  <MaterialCommunityIcons
+                    name="account-group-outline"
+                    size={24}
+                    color="#000"
+                  />
                 </Text>
               </View>
             </View>
@@ -124,8 +148,10 @@ const styles = StyleSheet.create({
   },
   displayName: {
     margin: 5,
+    justifyContent: "center",
   },
   caption: {
+    marginLeft: 10,
     margin: 5,
   },
   containerInfo: {
@@ -136,12 +162,15 @@ const styles = StyleSheet.create({
   },
   containerImage: {
     flex: 1 / 3,
+    backgroundColor: "white",
+    borderRadius: 9,
+    margin: 2,
   },
   image: {
     flex: 1,
     aspectRatio: 1 / 1,
-    margin: 5,
-    marginLeft: 2,
+    margin: 3,
+    marginLeft: 5,
     borderRadius: 10,
   },
 });

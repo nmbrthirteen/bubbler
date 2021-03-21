@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { View, TextInput, Image, Button } from "react-native";
+import { View, TextInput, Image } from "react-native";
+import { Button } from "react-native-elements";
 
 import firebase from "firebase";
 require("firebase/firestore");
@@ -57,17 +58,23 @@ export default function Save(props, { route }) {
 
   return (
     <View style={{ flex: 1 }}>
-      <Image
-        source={{
-          uri: props.image,
-        }}
-      />
       <TextInput
+        style={{ margin: 20 }}
         placeholder="Write a Caption . . ."
         onChangeText={(caption) => setCaption(caption)}
       />
-
-      <Button title="Save" onPress={() => uploadImage()} />
+      <View style={{ justifyContent: "space-around", alignItems: "center" }}>
+        <Button
+          title="Save"
+          disabled={!caption}
+          buttonStyle={{
+            backgroundColor: "#39CC9E",
+            borderRadius: 8,
+            width: "80%",
+          }}
+          onPress={() => uploadImage()}
+        />
+      </View>
     </View>
   );
 }

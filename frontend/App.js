@@ -5,7 +5,7 @@ import React, { Component } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-import { View, Text, Image, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 import * as firebase from "firebase";
 
 import { Provider } from "react-redux";
@@ -55,7 +55,7 @@ import {
   TransitionPresets,
   CardStyleInterpolators,
 } from "@react-navigation/stack";
-
+import { LogBox } from "react-native";
 import LottieView from "lottie-react-native";
 
 const Stack = createStackNavigator();
@@ -85,8 +85,20 @@ export class App extends Component {
   }
 
   render() {
+    if (Platform.OS === "ios" || Platform.OS === "android") {
+      LogBox.ignoreLogs(["Setting a timer"]);
+    }
     const { loggedIn, loaded } = this.state;
-    if (!loaded) {
+    if ((!loaded && Platform.OS === "android") || Platform.OS === "web") {
+      return (
+        <View
+          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        >
+          <Text>Loading</Text>
+        </View>
+      );
+    }
+    if (!loaded && Platform.OS === "ios") {
       return (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
