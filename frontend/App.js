@@ -20,7 +20,7 @@ import LoginScreen from "./components/auth/Login";
 import MainScreen from "./components/Main";
 import SaveScreen from "./components/main/Save";
 import AddScreen from "./components/main/Add";
-import CommentScreen from "./components/main/Comment";
+import PostBubbleScreen from "./components/main/PostBubble";
 import RegisterScreen from "./components/auth/Register";
 import ProfileScreen from "./components/main/Profile";
 import NotificationsScreen from "./components/main/Notifications";
@@ -50,12 +50,8 @@ import {
   getFocusedRouteNameFromRoute,
   useNavigation,
 } from "@react-navigation/native";
-import {
-  createStackNavigator,
-  TransitionPresets,
-  CardStyleInterpolators,
-} from "@react-navigation/stack";
-import { LogBox } from "react-native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { LogBox, StyleSheet } from "react-native";
 import LottieView from "lottie-react-native";
 
 const Stack = createStackNavigator();
@@ -89,7 +85,7 @@ export class App extends Component {
       LogBox.ignoreLogs(["Setting a timer"]);
     }
     const { loggedIn, loaded } = this.state;
-    if ((!loaded && Platform.OS === "android") || Platform.OS === "web") {
+    if (!loaded && Platform.OS === "android") {
       return (
         <View
           style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
@@ -168,12 +164,7 @@ export class App extends Component {
       const nav = useNavigation();
       return (
         <TouchableOpacity
-          style={{
-            flex: 1,
-            height: 20,
-            width: 200,
-            paddingTop: 7,
-          }}
+          style={styles.searchStyle}
           onPress={() =>
             nav.navigate("Search", {
               uid: firebase.auth().currentUser.uid,
@@ -294,8 +285,8 @@ export class App extends Component {
               navigation={this.props.navigation}
             />
             <Stack.Screen
-              name="Comment"
-              component={CommentScreen}
+              name="PostBubble"
+              component={PostBubbleScreen}
               navigation={this.props.navigation}
             />
           </Stack.Navigator>
@@ -306,3 +297,25 @@ export class App extends Component {
 }
 
 export default App;
+const styles = StyleSheet.create({
+  searchStyle: {
+    ...Platform.select({
+      ios: {
+        height: 30,
+        width: 200,
+        justifyContent: "center",
+      },
+      android: {
+        height: 20,
+        width: "90%",
+        marginLeft: 10,
+        justifyContent: "center",
+      },
+      web: {
+        height: 30,
+        width: "100%",
+        justifyContent: "center",
+      },
+    }),
+  },
+});

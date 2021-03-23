@@ -5,6 +5,8 @@ import {
   TextInput,
   FlatList,
   TouchableOpacity,
+  Platform,
+  StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
@@ -16,10 +18,7 @@ export default function Search({ navigation }, props) {
 
   function SearchHeader() {
     return (
-      <TouchableOpacity
-        style={{ flex: 1, height: 20, width: 200, paddingTop: 7 }}
-        activeOpacity={0.5}
-      >
+      <TouchableOpacity style={styles.searchStyle} activeOpacity={0.5}>
         <TextInput
           placeholder="Search..."
           onChangeText={(search) => fetchUsers(search)}
@@ -92,3 +91,26 @@ export default function Search({ navigation }, props) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  searchStyle: {
+    ...Platform.select({
+      ios: {
+        height: 30,
+        width: 200,
+        justifyContent: "center",
+      },
+      android: {
+        height: 32,
+        width: "75%",
+        marginLeft: 10,
+        justifyContent: "center",
+      },
+      web: {
+        height: 40,
+        width: "100%",
+        paddingTop: 5,
+      },
+    }),
+  },
+});

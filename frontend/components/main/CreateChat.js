@@ -20,15 +20,12 @@ const CreateChat = ({ navigation }) => {
       .collection("chats")
       .add({
         chatName: input,
-        displayName: firebase.auth().currentUser.displayName,
       })
       .then(() => {
         navigation.goBack();
       })
       .catch((error) => alert(error));
   };
-
-  console.log(firebase.auth().currentUser.displayName);
 
   return (
     <View style={styles.container}>

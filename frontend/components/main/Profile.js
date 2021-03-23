@@ -12,7 +12,6 @@ function Profile(props) {
 
   useEffect(() => {
     const { currentUser, posts } = props;
-    console.log({ currentUser, posts });
     if (props.route.params.uid === firebase.auth().currentUser.uid) {
       setUser(currentUser);
       setUserPosts(posts);
@@ -106,7 +105,7 @@ function Profile(props) {
             <View style={styles.imageContainer}>
               <Image
                 style={styles.image}
-                source={{ uri: item.downloadURL, cache: "only-if-cached" }}
+                source={{ uri: item.downloadURL, cache: "force-cache" }}
               />
             </View>
           )}

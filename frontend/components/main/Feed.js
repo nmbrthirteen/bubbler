@@ -22,16 +22,8 @@ function Feed(props) {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
-    if (
-      props.usersFollowingLoaded == props.following.length &&
-      props.following.length !== 0
-    ) {
-      props.feed.sort(function (x, y) {
-        return x.creation - y.creation;
-      });
-      setPosts(props.feed);
-    }
-  }, [props.usersFollowingLoaded, props.feed]);
+    onRefresh();
+  }, [props]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -40,12 +32,12 @@ function Feed(props) {
       props.following.length !== 0
     ) {
       props.feed.sort(function (x, y) {
-        return x.creation - y.creation;
+        return y.creation > x.creation;
       });
       setPosts(props.feed);
       setRefreshing(false);
     }
-  }, [refreshing, props.usersFollowingLoaded, props.feed]);
+  }, [props.usersFollowingLoaded, props.feed]);
 
   const onLikePress = (userId, postId) => {
     firebase
@@ -121,9 +113,11 @@ function Feed(props) {
                 )}
                 <Text
                   onPress={() =>
-                    props.navigation.navigate("Comment", {
+                    props.navigation.navigate("PostBubble", {
                       postId: item.id,
                       uid: item.user.uid,
+                      authorName: item.user.displayName,
+                      caption: item.caption,
                     })
                   }
                 >

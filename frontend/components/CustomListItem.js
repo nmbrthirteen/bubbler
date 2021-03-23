@@ -6,12 +6,13 @@ import firebase from "firebase";
 const CustomListItem = ({ id, chatName, enterChat }) => {
   const [chatMessages, setChatMessages] = useState([]);
   const db = firebase.firestore();
+
   useEffect(() => {
     const unsubscribe = db
       .collection("chats")
       .doc(id)
       .collection("messages")
-      .orderBy("timestamp", "desc")
+      .orderBy("timestamp", "asc")
       .onSnapshot((snapshot) =>
         setChatMessages(snapshot.docs.map((doc) => doc.data()))
       );
@@ -33,7 +34,7 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} elipsizeMode="tall">
-          {chatMessages?.[0]?.displayName}: {chatMessages?.[0]?.message}
+          {chatMessages?.[chatMessages.length-1]?.displayName}: {chatMessages?.[chatMessages.length-1]?.message}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

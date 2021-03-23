@@ -20,7 +20,7 @@ require("firebase/firestore");
 const Chat = ({ navigation, route }) => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  const [displayName, setDisplayName] = useState("");
+  
   const auth = firebase.auth();
 
   useLayoutEffect(() => {
@@ -64,7 +64,7 @@ const Chat = ({ navigation, route }) => {
       .add({
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         message: input,
-        displayName: firebase.auth().currentUser.displayName,
+        displayName: auth.currentUser.displayName,
         email: auth.currentUser.email,
       });
     setInput("");
@@ -151,9 +151,19 @@ const Chat = ({ navigation, route }) => {
                 onChangeText={(text) => setInput(text)}
                 style={styles.textInput}
               />
-              <TouchableOpacity onPress={sendMessage} activeOpacity={0.5}>
-                <MaterialCommunityIcons name="send" size={26} color="gray" />
-              </TouchableOpacity>
+              {!input ? (
+                <TouchableOpacity>
+                  <MaterialCommunityIcons
+                    name="send"
+                    size={26}
+                    color="#ebebeb"
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={sendMessage} activeOpacity={0.5}>
+                  <MaterialCommunityIcons name="send" size={26} color="gray" />
+                </TouchableOpacity>
+              )}
             </View>
           </>
         </TouchableWithoutFeedback>
