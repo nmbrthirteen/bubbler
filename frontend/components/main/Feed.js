@@ -5,6 +5,7 @@ import {
   Text,
   Image,
   FlatList,
+  TouchableOpacity,
   RefreshControl,
   SafeAreaView,
 } from "react-native";
@@ -17,13 +18,14 @@ import firebase from "firebase";
 require("firebase/firestore");
 import { connect } from "react-redux";
 
-function Feed(props) {
+function Feed(props, { navigation }) {
   const [posts, setPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     onRefresh();
-  }, [props]);
+  }, [props, { navigation }]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -76,16 +78,22 @@ function Feed(props) {
           }
           renderItem={({ item }) => (
             <View style={styles.containerImage}>
-              <View style={{ margin: 10, flexDirection: "row" }}>
+              <TouchableOpacity
+                style={{ margin: 10, flexDirection: "row" }}
+                onPress={() => {
+                  props.navigation.navigate("Profile", {
+                    uid: item.user.id,
+                  });
+                }}
+              >
                 <Avatar
                   rounded
                   source={{
-                    uri:
-                      "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
+                    uri: item.user.photoURL,
                   }}
                 />
                 <Text style={styles.displayName}>{item.user.displayName}</Text>
-              </View>
+              </TouchableOpacity>
               <Text style={styles.caption}>{item.caption}</Text>
               <Image style={styles.image} source={{ uri: item.downloadURL }} />
               <View

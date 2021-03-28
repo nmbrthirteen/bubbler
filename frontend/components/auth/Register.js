@@ -29,10 +29,6 @@ export default class Register extends Component {
             displayName,
             email,
           });
-        result.user.updateProfile({
-          displayName: displayName,
-          photoURL: "./images/avatar-placeholder.png",
-        });
         console.log(result);
       })
       .catch((error) => {

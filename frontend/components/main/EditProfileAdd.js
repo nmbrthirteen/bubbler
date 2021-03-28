@@ -136,7 +136,7 @@ export default function Add({ navigation }) {
           color="#39CC9E"
           size={26}
           style={{ margin: 5 }}
-          onPress={() => navigation.navigate("Save", { image })}
+          onPress={() => navigation.goBack({ image })}
         />
       </View>
       {/*<Button

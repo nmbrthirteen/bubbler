@@ -81,7 +81,7 @@ export default function Search({ navigation }, props) {
             <Avatar
               rounded
               source={{
-                uri: "https://thispersondoesnotexist.com/image",
+                uri: item.photoURL,
               }}
             />
             <Text>{item.displayName}</Text>

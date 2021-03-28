@@ -1,20 +1,41 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View, Text, Image, FlatList, Button } from "react-native";
+import React, { useEffect, useState, useLayoutEffect } from "react";
+import { StyleSheet, View, Text, Image, FlatList } from "react-native";
+import { Button } from "react-native-elements";
 
+import { useNavigation } from "@react-navigation/native";
 import firebase from "firebase";
 require("firebase/firestore");
 import { connect } from "react-redux";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 function Profile(props) {
   const [userPosts, setUserPosts] = useState([]);
   const [user, setUser] = useState(null);
   const [following, setFollowing] = useState(false);
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackTitleVisible: false,
+    });
+  });
 
   useEffect(() => {
     const { currentUser, posts } = props;
     if (props.route.params.uid === firebase.auth().currentUser.uid) {
       setUser(currentUser);
       setUserPosts(posts);
+      navigation.setOptions({
+        headerRight: () => (
+          <MaterialCommunityIcons
+            name="arrow-collapse-right"
+            size={25}
+            onPress={() => onLogout()}
+            style={{ marginRight: 20 }}
+            color="gray"
+          />
+        ),
+      });
     } else {
       firebase
         .firestore()
@@ -33,7 +54,7 @@ function Profile(props) {
         .collection("posts")
         .doc(props.route.params.uid)
         .collection("userPosts")
-        .orderBy("creation", "asc")
+        .orderBy("creation", "desc")
         .get()
         .then((snapshot) => {
           let posts = snapshot.docs.map((doc) => {
@@ -82,8 +103,30 @@ function Profile(props) {
   return (
     <View style={styles.container}>
       <View style={styles.containerInfo}>
-        <Text>{user.displayName}</Text>
-        <Text>{user.email}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-around",
+          }}
+        >
+          <Image
+            style={{
+              height: 80,
+              width: 80,
+              borderRadius: 20,
+              alignItems: "center",
+              marginBottom: 20,
+            }}
+            source={{ uri: user.photoURL }}
+          />
+          <View>
+            <Text style={{ fontSize: 18, marginTop: 30, marginRight: 30 }}>
+              {user.displayName}
+            </Text>
+            <Text style={{ fontSize: 15, marginRight: 30 }}>{user.email}</Text>
+          </View>
+        </View>
+
         {props.route.params.uid !== firebase.auth().currentUser.uid ? (
           <View>
             {following ? (
@@ -93,7 +136,12 @@ function Profile(props) {
             )}
           </View>
         ) : (
-          <Button title="Logout" onPress={() => onLogout()} />
+          <View>
+            <Button
+              title="Edit Profile"
+              onPress={() => navigation.navigate("ProfileEdit")}
+            />
+          </View>
         )}
       </View>
       <View style={styles.containerGallery}>

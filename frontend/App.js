@@ -28,6 +28,8 @@ import SearchScreen from "./components/main/Search";
 import ChatsScreen from "./components/main/Chats";
 import CreateChatScreen from "./components/main/CreateChat";
 import ChatScreen from "./components/main/Chat";
+import ProfileEditScreen from "./components/main/ProfileEdit";
+import EditProfileAddScreen from "./components/main/EditProfileAdd";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD-dx1KB4kjK9C6UcnK7jeMsPauZL9wf0I",
@@ -138,7 +140,7 @@ export class App extends Component {
         >
           <Image
             style={{ marginLeft: 15, width: 30, height: 30 }}
-            source={require("./images/avatar-placeholder.png")}
+            source={{ uri: firebase.auth().currentUser.photoURL }}
           />
         </TouchableOpacity>
       );
@@ -261,6 +263,7 @@ export class App extends Component {
               name="Notifications"
               component={NotificationsScreen}
             />
+            <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
             <Stack.Screen name="Profile" component={ProfileScreen} />
             <Stack.Screen
               name="Main"
@@ -277,6 +280,11 @@ export class App extends Component {
             <Stack.Screen
               name="Add"
               component={AddScreen}
+              navigation={this.props.navigation}
+            />
+            <Stack.Screen
+              name="EditProfileAdd"
+              component={EditProfileAddScreen}
               navigation={this.props.navigation}
             />
             <Stack.Screen

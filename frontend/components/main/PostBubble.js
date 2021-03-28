@@ -3,7 +3,7 @@ import {
   View,
   Text,
   FlatList,
-  Button,
+  ScrollView,
   TextInput,
   TouchableWithoutFeedback,
   StyleSheet,
@@ -12,7 +12,6 @@ import {
   SafeAreaView,
   KeyboardAvoidingView,
   TouchableOpacity,
-  Window,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
@@ -29,7 +28,6 @@ function PostBubble(props) {
   const [comments, setComments] = useState([]);
   const [postId, setPostId] = useState("");
   const [text, setText] = useState("");
-  const [refresh, setRefresh] = useState(0);
   const navigation = useNavigation();
 
   const authorName =
@@ -86,6 +84,7 @@ function PostBubble(props) {
   }, [props.route.params.postId, props.users]);
 
   const onCommentSend = () => {
+    Keyboard.dismiss();
     firebase
       .firestore()
       .collection("posts")
@@ -96,8 +95,10 @@ function PostBubble(props) {
       .add({
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         creator: firebase.auth().currentUser.uid,
+        displayName: firebase.auth().currentUser,
         text,
       });
+    setText("");
   };
 
   return (
@@ -113,22 +114,23 @@ function PostBubble(props) {
               numColumns={1}
               horizontal={false}
               data={comments}
-              extraData={refresh}
               renderItem={({ item }) => (
-                <View style={{ margin: 15 }}>
+                <ScrollView style={{ margin: 15 }}>
                   {item.user !== undefined ? (
                     <Text>{item.user.displayName}</Text>
                   ) : null}
                   <Text>{item.text}</Text>
-                </View>
+                </ScrollView>
               )}
             />
 
             <View style={styles.footer}>
               <TextInput
+                value={text}
                 style={styles.textInput}
                 placeholder="say something..."
                 onChangeText={(text) => setText(text)}
+                onSubmitEditing={onCommentSend}
               />
               {!text ? (
                 <TouchableOpacity>
@@ -140,9 +142,7 @@ function PostBubble(props) {
                 </TouchableOpacity>
               ) : (
                 <TouchableOpacity
-                  onPress={() =>
-                    onCommentSend() && setRefresh(1) && setRefresh(0)
-                  }
+                  onPress={() => onCommentSend()}
                   activeOpacity={0.5}
                 >
                   <MaterialCommunityIcons name="send" size={26} color="gray" />
