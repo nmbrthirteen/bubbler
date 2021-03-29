@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import "react-native-gesture-handler";
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -46,6 +46,8 @@ if (firebase.apps.length === 0) {
 } else {
   app = firebase.app();
 }
+const db = app.firestore();
+const auth = firebase.auth();
 
 import {
   NavigationContainer,
@@ -60,7 +62,7 @@ const Stack = createStackNavigator();
 
 export class App extends Component {
   constructor(props) {
-    super();
+    super(props);
     this.state = {
       loaded: false,
     };
@@ -129,6 +131,11 @@ export class App extends Component {
 
     function ProfileHeader() {
       const nav = useNavigation();
+      const [userDetails, setUserDetails] = useState("");
+      db.collection("users")
+        .doc(auth.currentUser.uid)
+        .get()
+        .then((snapshot) => setUserDetails(snapshot.data()));
       return (
         <TouchableOpacity
           onPress={(event) => {
@@ -139,8 +146,8 @@ export class App extends Component {
           }}
         >
           <Image
-            style={{ marginLeft: 15, width: 30, height: 30 }}
-            source={{ uri: firebase.auth().currentUser.photoURL }}
+            style={{ marginLeft: 15, width: 30, height: 30, borderRadius: 16 }}
+            source={{ uri: userDetails?.photoURL }}
           />
         </TouchableOpacity>
       );
@@ -305,6 +312,7 @@ export class App extends Component {
 }
 
 export default App;
+
 const styles = StyleSheet.create({
   searchStyle: {
     ...Platform.select({

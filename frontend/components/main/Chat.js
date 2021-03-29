@@ -20,9 +20,15 @@ require("firebase/firestore");
 const Chat = ({ navigation, route }) => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-  
-  const auth = firebase.auth();
 
+  const auth = firebase.auth();
+  const [userDetails, setUserDetails] = useState("");
+  firebase
+    .firestore()
+    .collection("users")
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((snapshot) => setUserDetails(snapshot.data()));
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chat",
@@ -36,10 +42,7 @@ const Chat = ({ navigation, route }) => {
             margin: 40,
           }}
         >
-          <Avatar
-            rounded
-            source={{ uri: "https://thispersondoesnotexist.com/image" }}
-          />
+          <Avatar rounded source={{ uri: userDetails.photoURL }} />
           <Text style={{ marginLeft: 10 }}>{route.params.chatName}</Text>
         </View>
       ),
@@ -65,6 +68,7 @@ const Chat = ({ navigation, route }) => {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         message: input,
         displayName: auth.currentUser.displayName,
+        photoURL: userDetails.photoURL,
         email: auth.currentUser.email,
       });
     setInput("");
@@ -114,7 +118,7 @@ const Chat = ({ navigation, route }) => {
                       right={-5}
                       size={30}
                       source={{
-                        uri: "https://thispersondoesnotexist.com/image",
+                        uri: data.photoURL,
                       }}
                     />
                     <Text style={styles.recieverText}>{data.message}</Text>
@@ -134,7 +138,7 @@ const Chat = ({ navigation, route }) => {
                       left={-5}
                       size={30}
                       source={{
-                        uri: "https://thispersondoesnotexist.com/image",
+                        uri: data.photoURL,
                       }}
                     />
                     <Text style={styles.senderText}>{data.message}</Text>

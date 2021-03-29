@@ -1,5 +1,19 @@
-import React, { useEffect, useState, useLayoutEffect } from "react";
-import { StyleSheet, View, Text, Image, FlatList } from "react-native";
+import React, {
+  useEffect,
+  useState,
+  useLayoutEffect,
+  useCallback,
+} from "react";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Image,
+  FlatList,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+} from "react-native";
 import { Button } from "react-native-elements";
 
 import { useNavigation } from "@react-navigation/native";
@@ -13,11 +27,17 @@ function Profile(props) {
   const [user, setUser] = useState(null);
   const [following, setFollowing] = useState(false);
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerBackTitleVisible: false,
     });
+  });
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setRefreshing(false);
   });
 
   useEffect(() => {
@@ -71,6 +91,7 @@ function Profile(props) {
     } else {
       setFollowing(false);
     }
+    onRefresh();
   }, [props.route.params.uid, props.following]);
 
   const onFollow = () => {
@@ -101,7 +122,13 @@ function Profile(props) {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       <View style={styles.containerInfo}>
         <View
           style={{
@@ -123,7 +150,11 @@ function Profile(props) {
             <Text style={{ fontSize: 18, marginTop: 30, marginRight: 30 }}>
               {user.displayName}
             </Text>
-            <Text style={{ fontSize: 15, marginRight: 30 }}>{user.email}</Text>
+            {props.route.params.uid === firebase.auth().currentUser.uid ? (
+              <Text style={{ fontSize: 18, left: 0 }}>
+                {firebase.auth().currentUser.email}
+              </Text>
+            ) : null}
           </View>
         </View>
 
@@ -159,7 +190,7 @@ function Profile(props) {
           )}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({

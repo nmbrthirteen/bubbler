@@ -19,14 +19,20 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
     return unsubscribe;
   });
 
+  const [userDetails, setUserDetails] = useState("");
+  firebase
+    .firestore()
+    .collection("users")
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((snapshot) => setUserDetails(snapshot.data()));
+
   return (
     <ListItem key={id} onPress={() => enterChat(id, chatName)} bottomDivider>
       <Avatar
         rounded
         source={{
-          uri:
-            chatMessages?.[0]?.photoURL ||
-            "https://faculty.wharton.upenn.edu/wp-content/uploads/2016/11/F_David_Guy_IMG_0201a.jpg",
+          uri: chatMessages?.[0]?.photoURL || userDetails.photoURL,
         }}
       />
       <ListItem.Content>
@@ -34,7 +40,8 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} elipsizeMode="tall">
-          {chatMessages?.[chatMessages.length-1]?.displayName}: {chatMessages?.[chatMessages.length-1]?.message}
+          {chatMessages?.[chatMessages.length - 1]?.displayName}:{" "}
+          {chatMessages?.[chatMessages.length - 1]?.message}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

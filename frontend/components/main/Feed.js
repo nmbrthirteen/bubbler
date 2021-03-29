@@ -18,14 +18,13 @@ import firebase from "firebase";
 require("firebase/firestore");
 import { connect } from "react-redux";
 
-function Feed(props, { navigation }) {
+function Feed(props) {
   const [posts, setPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
     onRefresh();
-  }, [props, { navigation }]);
+  }, [props]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -80,11 +79,9 @@ function Feed(props, { navigation }) {
             <View style={styles.containerImage}>
               <TouchableOpacity
                 style={{ margin: 10, flexDirection: "row" }}
-                onPress={() => {
-                  props.navigation.navigate("Profile", {
-                    uid: item.user.id,
-                  });
-                }}
+                onPress={() =>
+                  props.navigation.navigate("Profile", { uid: item.user.uid })
+                }
               >
                 <Avatar
                   rounded

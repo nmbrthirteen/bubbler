@@ -95,7 +95,7 @@ function PostBubble(props) {
       .add({
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         creator: firebase.auth().currentUser.uid,
-        displayName: firebase.auth().currentUser,
+        displayName: firebase.auth().currentUser.displayName,
         text,
       });
     setText("");
@@ -126,7 +126,6 @@ function PostBubble(props) {
 
             <View style={styles.footer}>
               <TextInput
-                value={text}
                 style={styles.textInput}
                 placeholder="say something..."
                 onChangeText={(text) => setText(text)}

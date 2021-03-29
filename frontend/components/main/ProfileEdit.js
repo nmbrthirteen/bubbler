@@ -160,6 +160,14 @@ const EditProfileScreen = ({ navigation }) => {
     </View>
   );
 
+  const [userDetails, setUserDetails] = useState("");
+  firebase
+    .firestore()
+    .collection("users")
+    .doc(firebase.auth().currentUser.uid)
+    .get()
+    .then((snapshot) => setUserDetails(snapshot.data()));
+
   return (
     <View style={styles.container}>
       <BottomSheet
@@ -190,7 +198,7 @@ const EditProfileScreen = ({ navigation }) => {
             >
               <ImageBackground
                 source={{
-                  uri: image ? image : userData.photoURL,
+                  uri: image ? image : userDetails.photoURL,
                 }}
                 style={{ height: 100, width: 100 }}
                 imageStyle={{ borderRadius: 15 }}
@@ -220,9 +228,7 @@ const EditProfileScreen = ({ navigation }) => {
             </View>
           </TouchableOpacity>
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-            {userData
-              ? userData.displayName
-              : firebase.auth().currentUser.displayName}
+            {userData ? userData : userDetails.displayName}
           </Text>
         </View>
 
