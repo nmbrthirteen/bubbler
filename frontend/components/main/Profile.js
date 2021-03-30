@@ -122,13 +122,12 @@ function Profile(props) {
   }
 
   return (
-    <ScrollView
+    <SafeAreaView
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
     >
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       <View style={styles.containerInfo}>
         <View
           style={{
@@ -136,16 +135,7 @@ function Profile(props) {
             justifyContent: "space-around",
           }}
         >
-          <Image
-            style={{
-              height: 80,
-              width: 80,
-              borderRadius: 20,
-              alignItems: "center",
-              marginBottom: 20,
-            }}
-            source={{ uri: user.photoURL }}
-          />
+          <Image style={styles.userImage} source={{ uri: user.photoURL }} />
           <View>
             <Text style={{ fontSize: 18, marginTop: 30, marginRight: 30 }}>
               {user.displayName}
@@ -190,7 +180,7 @@ function Profile(props) {
           )}
         />
       </View>
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 const styles = StyleSheet.create({
@@ -209,6 +199,13 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1 / 3,
+  },
+  userImage: {
+    height: 80,
+    width: 80,
+    borderRadius: 20,
+    alignItems: "center",
+    marginBottom: 20,
   },
 });
 

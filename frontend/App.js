@@ -61,6 +61,7 @@ import LottieView from "lottie-react-native";
 const Stack = createStackNavigator();
 
 export class App extends Component {
+  _isMounted = false;
   constructor(props) {
     super(props);
     this.state = {
@@ -69,6 +70,8 @@ export class App extends Component {
   }
 
   componentDidMount() {
+    this._isMounted = true;
+
     firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         this.setState({
@@ -84,6 +87,10 @@ export class App extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   render() {
     if (Platform.OS === "ios" || Platform.OS === "android") {
       LogBox.ignoreLogs(["Setting a timer"]);
@@ -91,18 +98,14 @@ export class App extends Component {
     const { loggedIn, loaded } = this.state;
     if (!loaded && Platform.OS === "android") {
       return (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={styles.loading}>
           <Text>Loading</Text>
         </View>
       );
     }
     if (!loaded && Platform.OS === "ios") {
       return (
-        <View
-          style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-        >
+        <View style={styles.loading}>
           <LottieView
             source={require("./images/animation-612.json")}
             autoPlay
@@ -138,15 +141,14 @@ export class App extends Component {
         .then((snapshot) => setUserDetails(snapshot.data()));
       return (
         <TouchableOpacity
-          onPress={(event) => {
-            event.preventDefault(),
-              nav.navigate("Profile", {
-                uid: firebase.auth().currentUser.uid,
-              });
+          onPress={() => {
+            nav.navigate("Profile", {
+              uid: firebase.auth().currentUser.uid,
+            });
           }}
         >
           <Image
-            style={{ marginLeft: 15, width: 30, height: 30, borderRadius: 16 }}
+            style={styles.profileHeader}
             source={{ uri: userDetails?.photoURL }}
           />
         </TouchableOpacity>
@@ -181,19 +183,7 @@ export class App extends Component {
           }
           activeOpacity={0.5}
         >
-          <Text
-            style={{
-              color: "#AEAEAE",
-              overflow: "hidden",
-              padding: 6,
-              borderRadius: 15,
-              backgroundColor: "#EEEEEE",
-              paddingLeft: 12,
-              alignItems: "center",
-            }}
-          >
-            Search..
-          </Text>
+          <Text style={styles.searchTitle}>Search..</Text>
         </TouchableOpacity>
       );
     }
@@ -314,6 +304,26 @@ export class App extends Component {
 export default App;
 
 const styles = StyleSheet.create({
+  loading: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileHeader: {
+    marginLeft: 15,
+    width: 30,
+    height: 30,
+    borderRadius: 16,
+  },
+  searchTitle: {
+    color: "#AEAEAE",
+    overflow: "hidden",
+    padding: 6,
+    borderRadius: 15,
+    backgroundColor: "#EEEEEE",
+    paddingLeft: 12,
+    alignItems: "center",
+  },
   searchStyle: {
     ...Platform.select({
       ios: {

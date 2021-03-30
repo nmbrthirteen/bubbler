@@ -30,7 +30,7 @@ const EditProfileScreen = ({ navigation }) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerBackTitleVisible: false,
+      headerBackTitle: "Back",
       headerTitle: "Edit Profile",
     });
   });
@@ -47,7 +47,6 @@ const EditProfileScreen = ({ navigation }) => {
       aspect: [1, 1],
       quality: 0.1,
     });
-    console.log(result);
     if (!result.cancelled) {
       setImage(result.uri);
     } else {
@@ -69,7 +68,6 @@ const EditProfileScreen = ({ navigation }) => {
       aspect: [1, 1],
       quality: 0.1,
     });
-    console.log(result);
     if (!result.cancelled) {
       setImage(result.uri);
     } else {
@@ -82,7 +80,6 @@ const EditProfileScreen = ({ navigation }) => {
     const childPath = `user/${
       firebase.auth().currentUser.uid
     }/${Math.random().toString(36)}`;
-    console.log(childPath);
 
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -96,7 +93,6 @@ const EditProfileScreen = ({ navigation }) => {
     const taskCompleted = () => {
       task.snapshot.ref.getDownloadURL().then((snapshot) => {
         savePostData(snapshot);
-        console.log(snapshot);
       });
     };
 
@@ -117,7 +113,6 @@ const EditProfileScreen = ({ navigation }) => {
         photoURL: downloadURL,
       })
       .then(() => {
-        console.log("User Updated!");
         alert(
           "Profile Updated!",
           "Your profile has been updated successfully."
@@ -187,15 +182,7 @@ const EditProfileScreen = ({ navigation }) => {
       >
         <View style={{ alignItems: "center" }}>
           <TouchableOpacity onPress={() => bs.current.snapTo(0)}>
-            <View
-              style={{
-                height: 100,
-                width: 100,
-                borderRadius: 15,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
+            <View style={styles.photoUpload}>
               <ImageBackground
                 source={{
                   uri: image ? image : userDetails.photoURL,
@@ -214,24 +201,16 @@ const EditProfileScreen = ({ navigation }) => {
                     name="camera"
                     size={35}
                     color="#fff"
-                    style={{
-                      opacity: 0.7,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderWidth: 1,
-                      borderColor: "#fff",
-                      borderRadius: 10,
-                    }}
+                    style={styles.cameraIcon}
                   />
                 </View>
               </ImageBackground>
             </View>
           </TouchableOpacity>
-          <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-            {userData ? userData : userDetails.displayName}
+          <Text style={styles.displayName}>
+            {userData ? userData.displayName : userDetails.displayName}
           </Text>
         </View>
-
         <View style={styles.action}>
           <FontAwesome name="user-o" color={colors.text} size={20} />
           <TextInput
@@ -240,6 +219,7 @@ const EditProfileScreen = ({ navigation }) => {
             value={userData ? userData.displayName : ""}
             placeholderTextColor="gray"
             autoCorrect={false}
+            autoFocus
             style={[
               styles.textInput,
               {
@@ -381,11 +361,13 @@ const styles = StyleSheet.create({
   },
   action: {
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 20,
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 8,
     marginBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#f2f2f2",
-    paddingBottom: 5,
+    borderBottomColor: "#39CC9E",
   },
   actionError: {
     flexDirection: "row",
@@ -396,8 +378,27 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    marginTop: Platform.OS === "ios" ? 0 : -5,
     paddingLeft: 10,
     color: "#05375a",
+  },
+  photoUpload: {
+    height: 100,
+    width: 100,
+    borderRadius: 15,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cameraIcon: {
+    opacity: 0.7,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#fff",
+    borderRadius: 10,
+  },
+  displayName: {
+    marginTop: 10,
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });

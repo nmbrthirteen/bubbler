@@ -20,7 +20,6 @@ require("firebase/firestore");
 const Chat = ({ navigation, route }) => {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
-
   const auth = firebase.auth();
   const [userDetails, setUserDetails] = useState("");
   firebase
@@ -29,6 +28,7 @@ const Chat = ({ navigation, route }) => {
     .doc(firebase.auth().currentUser.uid)
     .get()
     .then((snapshot) => setUserDetails(snapshot.data()));
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Chat",
@@ -67,7 +67,7 @@ const Chat = ({ navigation, route }) => {
       .add({
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         message: input,
-        displayName: auth.currentUser.displayName,
+        displayName: userDetails.displayName,
         photoURL: userDetails.photoURL,
         email: auth.currentUser.email,
       });

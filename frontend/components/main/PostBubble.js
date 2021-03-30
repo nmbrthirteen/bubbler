@@ -81,6 +81,8 @@ function PostBubble(props) {
     } else {
       matchUserToComment(comments);
     }
+
+    return matchUserToComment;
   }, [props.route.params.postId, props.users]);
 
   const onCommentSend = () => {

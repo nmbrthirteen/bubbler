@@ -45,7 +45,6 @@ export default function Add({ navigation }) {
       aspect: [1, 1],
       quality: 0.1,
     });
-    console.log(result);
     if (!result.cancelled) {
       setImage(result.uri);
     } else {
@@ -101,18 +100,7 @@ export default function Add({ navigation }) {
       <TouchableOpacity
         onPress={() => takePicture()}
         onPressIn={() => setSaveImageOpacity(1)}
-        style={{
-          marginLeft: "40%",
-          marginBottom: "15%",
-          width: 80,
-          height: 80,
-          justifyContent: "center",
-          alignItems: "center",
-          borderColor: "#bbb",
-          borderWidth: 2,
-          borderRadius: 100,
-          backgroundColor: "#ccc",
-        }}
+        style={styles.takePicture}
       ></TouchableOpacity>
       <View
         style={{
@@ -123,14 +111,7 @@ export default function Add({ navigation }) {
           opacity: saveImageOpacity,
         }}
       >
-        <Image
-          source={{ uri: image }}
-          style={{
-            height: 100,
-            width: 100,
-            borderRadius: 8,
-          }}
-        />
+        <Image source={{ uri: image }} style={styles.image} />
         <MaterialIcons
           name="send"
           color="#39CC9E"
@@ -139,10 +120,6 @@ export default function Add({ navigation }) {
           onPress={() => navigation.navigate("Save", { image })}
         />
       </View>
-      {/*<Button
-        title="Save"
-        onPress={() => navigation.navigate("Save", { image })}
-      /> */}
     </View>
   );
 }
@@ -151,6 +128,23 @@ const styles = StyleSheet.create({
   cameraContainer: {
     flex: 1,
     flexDirection: "row",
+  },
+  image: {
+    height: 100,
+    width: 100,
+    borderRadius: 8,
+  },
+  takePicture: {
+    marginLeft: "40%",
+    marginBottom: "15%",
+    width: 80,
+    height: 80,
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: "#bbb",
+    borderWidth: 2,
+    borderRadius: 100,
+    backgroundColor: "#ccc",
   },
   fixedRatio: {
     flex: 1,

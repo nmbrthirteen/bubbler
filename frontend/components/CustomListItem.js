@@ -40,8 +40,7 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} elipsizeMode="tall">
-          {chatMessages?.[chatMessages.length - 1]?.displayName}:{" "}
-          {chatMessages?.[chatMessages.length - 1]?.message}
+          {userDetails?.[chatMessages.length - 1]?.displayName} : {chatMessages?.[chatMessages.length - 1]?.message}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>
@@ -49,5 +48,3 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
 };
 
 export default CustomListItem;
-
-const styles = StyleSheet.create({});
