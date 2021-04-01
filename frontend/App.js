@@ -6,7 +6,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
-import * as firebase from "firebase";
+
+import firebase from "firebase/app";
 
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";

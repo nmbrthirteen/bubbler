@@ -8,6 +8,10 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
   const db = firebase.firestore();
 
   useEffect(() => {
+    db.collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => setUserDetails(snapshot.data()));
     const unsubscribe = db
       .collection("chats")
       .doc(id)
@@ -20,12 +24,6 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
   });
 
   const [userDetails, setUserDetails] = useState("");
-  firebase
-    .firestore()
-    .collection("users")
-    .doc(firebase.auth().currentUser.uid)
-    .get()
-    .then((snapshot) => setUserDetails(snapshot.data()));
 
   return (
     <ListItem key={id} onPress={() => enterChat(id, chatName)} bottomDivider>
@@ -40,7 +38,8 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} elipsizeMode="tall">
-          {userDetails?.[chatMessages.length - 1]?.displayName} : {chatMessages?.[chatMessages.length - 1]?.message}
+          {userDetails?.[chatMessages.length - 1]?.displayName} :{" "}
+          {chatMessages?.[chatMessages.length - 1]?.message}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

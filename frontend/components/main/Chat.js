@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState, useEffect } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -22,12 +22,6 @@ const Chat = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const auth = firebase.auth();
   const [userDetails, setUserDetails] = useState("");
-  firebase
-    .firestore()
-    .collection("users")
-    .doc(firebase.auth().currentUser.uid)
-    .get()
-    .then((snapshot) => setUserDetails(snapshot.data()));
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -55,10 +49,14 @@ const Chat = ({ navigation, route }) => {
       ),
     });
   });
-
   const sendMessage = () => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => setUserDetails(snapshot.data()));
     Keyboard.dismiss();
-
     firebase
       .firestore()
       .collection("chats")
@@ -191,6 +189,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     maxWidth: "80%",
     position: "relative",
+  },
+  recieverText: {
+    color: "black",
+    fontWeight: "500",
+    marginLeft: 10,
   },
   sender: {
     padding: 15,

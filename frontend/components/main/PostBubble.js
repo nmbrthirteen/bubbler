@@ -17,7 +17,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Avatar } from "react-native-elements";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import firebase from "firebase";
+import firebase from "firebase/app";
 require("firebase/firestore");
 
 import { connect } from "react-redux";
@@ -29,6 +29,14 @@ function PostBubble(props) {
   const [postId, setPostId] = useState("");
   const [text, setText] = useState("");
   const navigation = useNavigation();
+  const auth = firebase.auth();
+  const fireRef = firebase
+    .firestore()
+    .collection("posts")
+    .doc(props.route.params.uid)
+    .collection("userPosts")
+    .doc(props.route.params.postId)
+    .collection("comments");
 
   const authorName =
     props.route.params.authorName +
@@ -40,12 +48,19 @@ function PostBubble(props) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: authorName,
+      headerBackTitleVisible: false,
     });
   });
 
   useEffect(() => {
+    firebase
+      .firestore()
+      .collection("users")
+      .doc(firebase.auth().currentUser.uid)
+      .get()
+      .then((snapshot) => setUserDetails(snapshot.data()));
     function matchUserToComment(comments) {
-      for (let i = 0; i < comments.length; i++) {
+      for (let i = 0; i < comments; i++) {
         if (comments[i].hasOwnProperty("user")) {
           continue;
         }
@@ -58,48 +73,33 @@ function PostBubble(props) {
       }
       setComments(comments);
     }
-
     if (props.route.params.postId !== postId) {
-      firebase
-        .firestore()
-        .collection("posts")
-        .doc(props.route.params.uid)
-        .collection("userPosts")
-        .doc(props.route.params.postId)
-        .collection("comments")
-        .orderBy("timestamp", "asc")
-        .get()
-        .then((snapshot) => {
-          let comments = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            const id = doc.id;
-            return { id, ...data };
-          });
-          matchUserToComment(comments);
+      fireRef.orderBy("timestamp", "asc").onSnapshot((snapshot) => {
+        let comment = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const id = doc.id;
+          return { id, ...data };
         });
+        matchUserToComment(comment);
+      });
       setPostId(props.route.params.postId);
     } else {
       matchUserToComment(comments);
     }
-
     return matchUserToComment;
   }, [props.route.params.postId, props.users]);
 
+  const [userDetails, setUserDetails] = useState("");
+
   const onCommentSend = () => {
     Keyboard.dismiss();
-    firebase
-      .firestore()
-      .collection("posts")
-      .doc(props.route.params.uid)
-      .collection("userPosts")
-      .doc(props.route.params.postId)
-      .collection("comments")
-      .add({
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        creator: firebase.auth().currentUser.uid,
-        displayName: firebase.auth().currentUser.displayName,
-        text,
-      });
+    fireRef.add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      creator: firebase.auth().currentUser.uid,
+      photoURL: userDetails.photoURL,
+      displayName: userDetails.displayName,
+      text,
+    });
     setText("");
   };
 
@@ -118,10 +118,48 @@ function PostBubble(props) {
               data={comments}
               renderItem={({ item }) => (
                 <ScrollView style={{ margin: 15 }}>
-                  {item.user !== undefined ? (
-                    <Text>{item.user.displayName}</Text>
-                  ) : null}
-                  <Text>{item.text}</Text>
+                  {item.creator === auth.currentUser.uid ? (
+                    <View style={styles.reciever}>
+                      <Avatar
+                        position="absolute"
+                        rounded
+                        // WEB
+                        containerStyle={{
+                          position: "absolute",
+                          bottom: -15,
+                          right: -5,
+                        }}
+                        bottom={-15}
+                        right={-5}
+                        size={30}
+                        source={{
+                          uri: item.photoURL,
+                        }}
+                      />
+                      <Text style={styles.recieverText}>{item.text}</Text>
+                    </View>
+                  ) : (
+                    <View style={styles.sender}>
+                      <Avatar
+                        position="absolute"
+                        rounded
+                        // WEB
+                        containerStyle={{
+                          position: "absolute",
+                          bottom: -15,
+                          left: -5,
+                        }}
+                        bottom={-15}
+                        left={-5}
+                        size={30}
+                        source={{
+                          uri: item.photoURL,
+                        }}
+                      />
+                      <Text style={styles.senderName}>{item.displayName}</Text>
+                      <Text style={styles.senderText}>{item.text}</Text>
+                    </View>
+                  )}
                 </ScrollView>
               )}
             />
@@ -130,6 +168,7 @@ function PostBubble(props) {
               <TextInput
                 style={styles.textInput}
                 placeholder="say something..."
+                value={text}
                 onChangeText={(text) => setText(text)}
                 onSubmitEditing={onCommentSend}
               />
@@ -178,6 +217,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     maxWidth: "80%",
     position: "relative",
+  },
+  recieverText: {
+    color: "black",
+    fontWeight: "500",
+    marginRight: 10,
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  recieverName: {
+    right: 10,
+    paddingLeft: 10,
+    fontSize: 12,
+    color: "black",
   },
   sender: {
     padding: 15,
