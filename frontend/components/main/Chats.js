@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, View, ScrollView, SafeAreaView, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import CustomListItem from "../../components/CustomListItem.js";
-import firebase from "firebase";
+import firebase from "firebase/app";
 require("firebase/firestore");
 
 const Chats = () => {

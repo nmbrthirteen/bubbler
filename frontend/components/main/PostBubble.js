@@ -28,6 +28,8 @@ function PostBubble(props) {
   const [comments, setComments] = useState([]);
   const [postId, setPostId] = useState("");
   const [text, setText] = useState("");
+  const [userDetails, setUserDetails] = useState("");
+
   const navigation = useNavigation();
   const auth = firebase.auth();
   const fireRef = firebase
@@ -88,8 +90,6 @@ function PostBubble(props) {
     }
     return matchUserToComment;
   }, [props.route.params.postId, props.users]);
-
-  const [userDetails, setUserDetails] = useState("");
 
   const onCommentSend = () => {
     Keyboard.dismiss();

@@ -14,13 +14,17 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { StatusBar } from "expo-status-bar";
 import { Avatar, Button } from "react-native-elements";
 
-import firebase from "firebase";
+import firebase from "firebase/app";
 require("firebase/firestore");
 import { connect } from "react-redux";
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [permission, setPermission] = useState(false);
+
+  const auth = firebase.auth();
+  const firestore = firebase.firestore();
 
   useEffect(() => {
     onRefresh();
@@ -41,28 +45,45 @@ function Feed(props) {
   }, [props.usersFollowingLoaded, props.feed]);
 
   const onLikePress = (userId, postId) => {
-    firebase
-      .firestore()
+    firestore
       .collection("posts")
       .doc(userId)
       .collection("userPosts")
       .doc(postId)
       .collection("likes")
-      .doc(firebase.auth().currentUser.uid)
+      .doc(auth.currentUser.uid)
       .set({});
   };
 
   const onDislikePress = (userId, postId) => {
-    firebase
-      .firestore()
+    firestore
       .collection("posts")
       .doc(userId)
       .collection("userPosts")
       .doc(postId)
       .collection("likes")
-      .doc(firebase.auth().currentUser.uid)
+      .doc(auth.currentUser.uid)
       .delete();
   };
+
+  {/*const sendBubbleRequest = ({ item }) => {
+    const cdata = firestore.collection("permission").add({
+      uid: auth.currentUser.uid,
+      email: auth.currentUser.email,
+      displayName: auth.currentUser.displayName,
+      postCaption: item.caption,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    permission === false
+      ? alert("Bubble Join Request Sent") && cdata
+      : props.navigation.navigate("PostBubble", {
+          postId: item.id,
+          uid: item.user.uid,
+          authorName: item.user.displayName,
+          caption: item.caption,
+        });
+  };*/}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -116,22 +137,21 @@ function Feed(props) {
                     onPress={() => onLikePress(item.user.uid, item.id)}
                   />
                 )}
-                <Text
-                  onPress={() =>
-                    props.navigation.navigate("PostBubble", {
-                      postId: item.id,
-                      uid: item.user.uid,
-                      authorName: item.user.displayName,
-                      caption: item.caption,
+                <TouchableOpacity onPress={() => 
+                  props.navigation.navigate("PostBubble", {
+                    postId: item.id,
+                    uid: item.user.uid,
+                    authorName: item.user.displayName,
+                    caption: item.caption,
                     })
-                  }
-                >
+                  }>
+                {/*sendBubbleRequest({ item })}>*/} 
                   <MaterialCommunityIcons
                     name="account-group-outline"
                     size={24}
                     color="#000"
                   />
-                </Text>
+                </TouchableOpacity>
               </View>
             </View>
           )}
