@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { View, TextInput, Image } from "react-native";
+import { View, Text, TextInput, Image } from "react-native";
 import { Button } from "react-native-elements";
+import { Picker } from "@react-native-picker/picker";
 
 import firebase from "firebase";
 require("firebase/firestore");
 require("firebase/firebase-storage");
 
-export default function Save(props, { route }) {
+export default function Save(props) {
   const [caption, setCaption] = useState("");
+  const [selectedDashboard, setSelectedDashboard] = useState("");
 
   const uploadImage = async () => {
     const uri = props.route.params.image;
@@ -47,6 +49,7 @@ export default function Save(props, { route }) {
       .collection("userPosts")
       .add({
         downloadURL,
+        selectedDashboard,
         caption,
         likesCount: 0,
         creation: firebase.firestore.FieldValue.serverTimestamp(),
@@ -57,20 +60,49 @@ export default function Save(props, { route }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <TextInput
-        style={{ margin: 20 }}
-        placeholder="Write a Caption . . ."
-        onChangeText={(caption) => setCaption(caption)}
-      />
-      <View style={{ justifyContent: "space-around", alignItems: "center" }}>
+    <View style={{ flex: 1, margin: 10, marginTop: 20 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View>
+          <TextInput
+            style={{ margin: 20 }}
+            placeholder="Write a Caption . . ."
+            onChangeText={(caption) => setCaption(caption)}
+          />
+        </View>
+        <Picker
+          style={{
+            flex: 1,
+            position: "absolute",
+            right: "5%",
+          }}
+          selectedValue={selectedDashboard}
+          itemStyle={{
+            width: 100,
+            fontSize: 17,
+          }}
+          onValueChange={(itemValue) =>
+            setSelectedDashboard(itemValue)
+          }
+        >
+          <Picker.Item label="Programming" value="Programming" />
+          <Picker.Item label="Travel" value="Travel" />
+          <Picker.Item label="DIY" value="DIY" />
+        </Picker>
+      </View>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
         <Button
           title="Save"
           disabled={!caption}
           buttonStyle={{
             backgroundColor: "#39CC9E",
             borderRadius: 8,
-            width: "80%",
+            marginTop: 50,
+            width: "100%",
           }}
           onPress={() => uploadImage()}
         />

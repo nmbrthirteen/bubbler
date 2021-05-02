@@ -15,13 +15,11 @@ import { StatusBar } from "expo-status-bar";
 import { Avatar, Button } from "react-native-elements";
 
 import firebase from "firebase/app";
-require("firebase/firestore");
 import { connect } from "react-redux";
 
 function Feed(props) {
   const [posts, setPosts] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const [permission, setPermission] = useState(false);
 
   const auth = firebase.auth();
   const firestore = firebase.firestore();
@@ -66,7 +64,8 @@ function Feed(props) {
       .delete();
   };
 
-  {/*const sendBubbleRequest = ({ item }) => {
+  {
+    /*const sendBubbleRequest = ({ item }) => {
     const cdata = firestore.collection("permission").add({
       uid: auth.currentUser.uid,
       email: auth.currentUser.email,
@@ -83,7 +82,8 @@ function Feed(props) {
           authorName: item.user.displayName,
           caption: item.caption,
         });
-  };*/}
+  };*/
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -114,15 +114,7 @@ function Feed(props) {
               </TouchableOpacity>
               <Text style={styles.caption}>{item.caption}</Text>
               <Image style={styles.image} source={{ uri: item.downloadURL }} />
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
-                  marginLeft: 10,
-                  alignItems: "center",
-                }}
-              >
+              <View style={styles.imageBottom}>
                 <Text>{item.likesCount}</Text>
                 {item.currentUserLike ? (
                   <Button
@@ -137,15 +129,16 @@ function Feed(props) {
                     onPress={() => onLikePress(item.user.uid, item.id)}
                   />
                 )}
-                <TouchableOpacity onPress={() => 
-                  props.navigation.navigate("PostBubble", {
-                    postId: item.id,
-                    uid: item.user.uid,
-                    authorName: item.user.displayName,
-                    caption: item.caption,
+                <TouchableOpacity
+                  onPress={() =>
+                    props.navigation.navigate("PostBubble", {
+                      postId: item.id,
+                      uid: item.user.uid,
+                      authorName: item.user.displayName,
+                      caption: item.caption,
                     })
-                  }>
-                {/*sendBubbleRequest({ item })}>*/} 
+                  }
+                >
                   <MaterialCommunityIcons
                     name="account-group-outline"
                     size={24}
@@ -164,6 +157,13 @@ function Feed(props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  imageBottom: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginLeft: 10,
+    alignItems: "center",
   },
   displayName: {
     margin: 5,

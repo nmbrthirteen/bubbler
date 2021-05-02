@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   ImageBackground,
   TextInput,
   StyleSheet,
-  Platform,
 } from "react-native";
 
 import { useTheme } from "react-native-paper";
@@ -16,15 +15,14 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 
 import BottomSheet from "reanimated-bottom-sheet";
 import Animated from "react-native-reanimated";
-import firebase from "firebase";
-import * as ImagePicker from "expo-image-picker";
 
-require("firebase/firestore");
+import firebase from "firebase/app";
+import * as ImagePicker from "expo-image-picker";
 
 const EditProfileScreen = ({ navigation }) => {
   const { colors } = useTheme();
   const [image, setImage] = useState(null);
-  const bs = React.createRef();
+  const bs = useRef();
   const fall = new Animated.Value(1);
   const [userData, setUserData] = useState("");
 
@@ -86,21 +84,13 @@ const EditProfileScreen = ({ navigation }) => {
 
     const task = firebase.storage().ref().child(childPath).put(blob);
 
-    const taskProgress = (snapshot) => {
-      console.log(`transferred: ${snapshot.bytesTransferred}`);
-    };
-
     const taskCompleted = () => {
       task.snapshot.ref.getDownloadURL().then((snapshot) => {
         savePostData(snapshot);
       });
     };
 
-    const taskError = (snapshot) => {
-      console.log(snapshot);
-    };
-
-    return task.on("state_changed", taskProgress, taskError, taskCompleted);
+    return task.on("state_changed", taskCompleted);
   };
 
   const savePostData = (downloadURL) => {
@@ -216,49 +206,13 @@ const EditProfileScreen = ({ navigation }) => {
           <TextInput
             onChangeText={(text) => setUserData({ displayName: text })}
             placeholder="Name"
+            defaultValue={userData.displayName}
             value={userData ? userData.displayName : ""}
             placeholderTextColor="gray"
-            autoCorrect={false}
             autoFocus
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
+            style={styles.textInput}
           />
         </View>
-        {/*<View style={styles.action}>
-          <Feather name="phone" color={colors.text} size={20} />
-          <TextInput
-            placeholder="Phone"
-            placeholderTextColor="#666666"
-            keyboardType="number-pad"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>
-        <View style={styles.action}>
-          <FontAwesome name="envelope-o" color={colors.text} size={20} />
-          <TextInput
-            value={email}
-            placeholder="Email"
-            placeholderTextColor="#666666"
-            keyboardType="email-address"
-            autoCorrect={false}
-            style={[
-              styles.textInput,
-              {
-                color: colors.text,
-              },
-            ]}
-          />
-        </View>*/}
         {!userData.displayName ? (
           <TouchableOpacity style={styles.nonCommandButton} onPress={() => {}}>
             <Text style={styles.panelButtonTitle}>Submit</Text>
@@ -266,9 +220,9 @@ const EditProfileScreen = ({ navigation }) => {
         ) : (
           <TouchableOpacity
             style={styles.commandButton}
-            onPress={() => {
-              uploadImage() && navigation.goBack();
-            }}
+            onPress={
+              image ? uploadImage() && navigation.goBack() : navigation.goBack()
+            }
           >
             <Text style={styles.panelButtonTitle}>Submit</Text>
           </TouchableOpacity>

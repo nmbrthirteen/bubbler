@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { ListItem, Avatar } from "react-native-elements";
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 const CustomListItem = ({ id, chatName, enterChat }) => {
   const [chatMessages, setChatMessages] = useState([]);
@@ -38,7 +38,8 @@ const CustomListItem = ({ id, chatName, enterChat }) => {
           {chatName}
         </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} elipsizeMode="tall">
-          {userDetails?.[chatMessages.length - 1]?.displayName} : {chatMessages?.[chatMessages.length - 1]?.message}
+          {userDetails?.[chatMessages.length - 1]?.displayName} :{" "}
+          {chatMessages?.[chatMessages.length - 1]?.message}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

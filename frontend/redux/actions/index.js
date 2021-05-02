@@ -7,9 +7,7 @@ import {
   USERS_LIKES_STATE_CHANGE,
   CLEAR_DATA,
 } from "../constants/index";
-import firebase from "firebase";
-import { SnapshotViewIOSComponent } from "react-native";
-require("firebase/firestore");
+import firebase from "firebase/app";
 
 export function clearData() {
   return (dispatch) => {
@@ -127,7 +125,7 @@ export function fetchUsersFollowingPosts(uid) {
 }
 
 export function fetchUsersFollowingLikes(uid, postId) {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     firebase
       .firestore()
       .collection("posts")

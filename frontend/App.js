@@ -3,8 +3,6 @@ import "react-native-gesture-handler";
 import React, { Component, useState } from "react";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-
 import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 
 import firebase from "firebase/app";
@@ -73,7 +71,7 @@ export class App extends Component {
   componentDidMount() {
     this._isMounted = true;
 
-    firebase.auth().onAuthStateChanged((user) => {
+    auth.onAuthStateChanged((user) => {
       if (!user) {
         this.setState({
           loggedIn: false,

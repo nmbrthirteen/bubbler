@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import firebase from "firebase";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
 import {

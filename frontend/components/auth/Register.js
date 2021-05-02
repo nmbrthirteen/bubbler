@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { StyleSheet, View, TextInput, Button } from "react-native";
 
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 export default class Register extends Component {
   constructor(props) {

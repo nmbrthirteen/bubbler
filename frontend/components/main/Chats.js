@@ -34,7 +34,7 @@ const Chats = () => {
 
   return (
     <SafeAreaView>
-      <ScrollView>
+      {/*<ScrollView>
         {chats.map(({ id, data: { chatName } }) => (
           <CustomListItem
             key={id}
@@ -43,7 +43,7 @@ const Chats = () => {
             enterChat={enterChat}
           />
         ))}
-      </ScrollView>
+      </ScrollView>*/}
     </SafeAreaView>
   );
 };

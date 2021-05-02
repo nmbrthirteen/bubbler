@@ -12,13 +12,11 @@ import {
   FlatList,
   RefreshControl,
   SafeAreaView,
-  ScrollView,
 } from "react-native";
 import { Button } from "react-native-elements";
 
 import { useNavigation } from "@react-navigation/native";
-import firebase from "firebase";
-require("firebase/firestore");
+import firebase from "firebase/app";
 import { connect } from "react-redux";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -28,21 +26,39 @@ function Profile(props) {
   const [following, setFollowing] = useState(false);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const uid = firebase.auth().currentUser.uid;
+  const [dashboard, setDashboard] = useState(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerBackTitleVisible: false,
+      headerTitle: dashboard ? "Dashboard" : "Profile",
     });
   });
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
+    firebase
+      .firestore()
+      .collection("posts")
+      .doc(props.route.params.uid)
+      .collection("userPosts")
+      .orderBy("creation", "desc")
+      .get()
+      .then((snapshot) => {
+        let posts = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          const id = doc.id;
+          return { id, ...data };
+        });
+        setUserPosts(posts);
+      });
     setRefreshing(false);
   });
 
   useEffect(() => {
     const { currentUser, posts } = props;
-    if (props.route.params.uid === firebase.auth().currentUser.uid) {
+    if (props.route.params.uid === uid) {
       setUser(currentUser);
       setUserPosts(posts);
       navigation.setOptions({
@@ -66,23 +82,21 @@ function Profile(props) {
           if (snapshot.exists) {
             setUser(snapshot.data());
           } else {
-            console.log("does not exist");
+            console.log("user, does not exist maybe its dashboard");
           }
         });
       firebase
         .firestore()
-        .collection("posts")
+        .collection("dashboards")
         .doc(props.route.params.uid)
-        .collection("userPosts")
-        .orderBy("creation", "desc")
         .get()
         .then((snapshot) => {
-          let posts = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            const id = doc.id;
-            return { id, ...data };
-          });
-          setUserPosts(posts);
+          if (snapshot.exists) {
+            setUser(snapshot.data());
+            setDashboard(snapshot.data());
+          } else {
+            console.log("does not exist");
+          }
         });
     }
 
@@ -98,7 +112,7 @@ function Profile(props) {
     firebase
       .firestore()
       .collection("following")
-      .doc(firebase.auth().currentUser.uid)
+      .doc(uid)
       .collection("userFollowing")
       .doc(props.route.params.uid)
       .set({});
@@ -107,7 +121,7 @@ function Profile(props) {
     firebase
       .firestore()
       .collection("following")
-      .doc(firebase.auth().currentUser.uid)
+      .doc(uid)
       .collection("userFollowing")
       .doc(props.route.params.uid)
       .delete();
@@ -122,12 +136,7 @@ function Profile(props) {
   }
 
   return (
-    <SafeAreaView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    >
+    <SafeAreaView style={styles.container}>
       <View style={styles.containerInfo}>
         <View
           style={{
@@ -169,6 +178,9 @@ function Profile(props) {
         <FlatList
           numColumns={3}
           horizontal={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           data={userPosts}
           renderItem={({ item }) => (
             <View style={styles.imageContainer}>
